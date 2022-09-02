@@ -16,4 +16,4 @@ app.use(errorHandlingMiddleware)
 
 const PORT : number = Number(process.env.PORT)
 
-app.listen(() => console.log(`Server runing on port ${PORT}`))
+app.listen(PORT,() => {console.log(`Server runing on port ${PORT}`)})

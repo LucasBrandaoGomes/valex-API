@@ -11,7 +11,6 @@ dotenv.config();
 
 async function checkCompanyApiKey(apiKey: string) {
   const company = await companyRepository.findByApiKey(apiKey);
-
   if (!company) {
     throw { code: "NotFound", message: "Invalid company"}
   }
@@ -41,26 +40,25 @@ async function checkNumberOfCardType(
   }
 }
 
-function formatEmployeeName(name: string) {
-  const arrName = name.split(" ");
-  const formatNameArr = [];
-  for (let i = 0; i < arrName.length; i++) {
-    if (i === 0 || i === arrName.length - 1) {
-      formatNameArr.push(arrName[i].toUpperCase());
-      continue;
+function formatName(name: string) {
+    const arrName = name.split(" ");
+    const formatNameArr = [];
+    for (let i = 0; i < arrName.length; i++) {
+      if (i === 0 || i === arrName.length - 1) {
+        formatNameArr.push(arrName[i].toUpperCase());
+        continue;
+      }
+  
+      if (i !== 0 && i !== arrName.length - 1 && arrName[i].length >= 3) {
+        formatNameArr.push(arrName[i][0].toUpperCase());
+        continue;
+      }
     }
-
-    if (i !== 0 && i !== arrName.length - 1 && arrName[i].length >= 3) {
-      formatNameArr.push(arrName[i][0].toUpperCase());
-      continue;
-    }
-  }
-
-  return formatNameArr.join(" ");
+  
+    return formatNameArr.join(" ");
 }
 
-export async function addNewCard(
-  employeeId: number,
+export async function addNewCard(employeeId: number,
   type: cardRepository.TransactionTypes,
   apiKey: string
 ) {
@@ -69,7 +67,7 @@ export async function addNewCard(
   await checkNumberOfCardType(employeeId, type);
 
   const cardNumber = faker.finance.creditCardNumber();
-  const cardName = formatEmployeeName(employee.fullName);
+  const cardName = formatName(employee.fullName);
 
   const cryptr = new Cryptr(process.env.CRYPTR);
   const cardCVCCripter = cryptr.encrypt(faker.finance.creditCardCVV());
