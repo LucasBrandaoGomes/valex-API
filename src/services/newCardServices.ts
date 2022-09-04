@@ -12,7 +12,7 @@ dotenv.config();
 async function checkCompanyApiKey(apiKey: string) {
   const company = await companyRepository.findByApiKey(apiKey);
   if (!company) {
-    throw { code: "NotFound", message: "Invalid company"}
+    throw { code: "NotFound", message: "Invalid company, insert a valid API Key"}
   }
 
   return company;

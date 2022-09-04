@@ -13,7 +13,8 @@ export async function checkRegisteredCard(id: number, securityCode: string) {
     if (!result) {
       throw { code: "NotFound", message: "Invalid card"}
     }
-    if(result.password){
+
+    if(result.password && result.password !== null){
       throw { code: "Conflict", message: "Card already active"}
     }
 
@@ -29,6 +30,7 @@ function encryptPassword(password:string) {
     return passwordEncrypted
 }
 export async function activeCard(id: number, securityCode: string, password:string) {
+  
   await checkRegisteredCard(id, securityCode);
   const passwordEncrypted = encryptPassword(password)
   const cardData: { password: string } = {

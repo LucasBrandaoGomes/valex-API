@@ -8,7 +8,7 @@ export default async function checkCompanyApiKey(
   const apiKey = req.headers["x-api-key"]
 
   if (!apiKey) {
-    throw { code: "Unauthorized", message: "Invalid API key! Insert a valid API key" };
+    throw { code: "Unauthorized", message: "Missing API Key" };
   }
 
   res.locals.apiKey = apiKey;
