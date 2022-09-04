@@ -7,6 +7,7 @@ import { validateSchemaMiddleware } from "../middlewares/validateSchemaMiddlewar
 
 const cardRouters = Router()
 
-cardRouters.post('/cards', checkCompanyAPIKey , validateSchemaMiddleware(schema.newCardSchema),controller.InserNewCard)
+cardRouters.post('/cards', checkCompanyAPIKey , validateSchemaMiddleware(schema.newCardSchema),controller.inserNewCard)
+cardRouters.put('/cards', validateSchemaMiddleware(schema.cardActivateSchema), controller.activateCard)
 
 export default cardRouters;

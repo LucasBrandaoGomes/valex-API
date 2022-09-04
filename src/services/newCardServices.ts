@@ -69,11 +69,10 @@ export async function addNewCard(employeeId: number,
   const cardNumber = faker.finance.creditCardNumber();
   const cardName = formatName(employee.fullName);
 
-  const cryptr = new Cryptr(process.env.CRYPTR);
+  const cryptr = new Cryptr(process.env.CRYPTR || "secret");
   const cardCVCCripter = cryptr.encrypt(faker.finance.creditCardCVV());
 
   const expirationDate = dayjs().add(5, "year").format("MM/YYYY");
-
   await cardRepository.insert({
     employeeId,
     number: cardNumber,

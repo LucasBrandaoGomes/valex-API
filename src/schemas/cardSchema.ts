@@ -1,4 +1,4 @@
-import joi from "joi";
+import joi, { string } from "joi";
 
 const newCardSchema = joi.object({
   employeeId: joi.number().integer().greater(0).required(),
@@ -8,4 +8,14 @@ const newCardSchema = joi.object({
     .required(),
 });
 
-export { newCardSchema };
+const cardActivateSchema = joi.object({
+  id: joi.number().greater(0).required(),
+  securityCode: joi.string().length(3).required(),
+  password: joi
+    .string()
+    .pattern(/^[0-9]+$/, { name: "password" })
+    .length(4)
+    .required(),
+});
+
+export { newCardSchema, cardActivateSchema };

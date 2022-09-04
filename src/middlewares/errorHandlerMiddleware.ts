@@ -16,6 +16,9 @@ export default function errorHandlingMiddleware(error: HttpException, req: Reque
   if(code === "Conflict"){
     return res.status(409).send(message)
   }
+  if(code === "Forbidden"){
+    return res.status(403).send(message)
+  }
   return res.status(500).send('Internal server error')
 
 }
