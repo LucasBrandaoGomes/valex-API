@@ -12,9 +12,18 @@ export async function cardTransactions(id:number) {
     const payments = await paymentRepository.findByCardId(id)
     const recharges = await rechargeRepository.findByCardId(id)
     const balance = await calculateBalance(id)
-    console.log(payments, recharges, balance)
+
+    const objectSend = {
+      balance,
+      transactions: payments.map(payment => payment),
+      recharges: recharges.map(recharge => recharge)
+    }
+    
+    return objectSend
 }
+
 async function calculateBalance(cardId:number) {
+
   const payments = await paymentRepository.findByCardId(cardId)
   const recharges = await rechargeRepository.findByCardId(cardId)
   const paymentsSum = getTransactionsSum(payments)

@@ -20,8 +20,8 @@ export async function activateCard(req: Request, res: Response) {
 
 export async function seeTransactions(req: Request, res: Response) {
     const {id} = req.body
-    await transactionsServices.cardTransactions(id)
-    return res.sendStatus(200)
+    const objecSend = await transactionsServices.cardTransactions(id)
+    return res.status(200).send(objecSend)
 
 }
 
