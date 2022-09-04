@@ -28,7 +28,7 @@ function encryptPassword(password:string) {
     
     return passwordEncrypted
 }
-export async function ActiveCard(id: number, securityCode: string, password:string) {
+export async function activeCard(id: number, securityCode: string, password:string) {
   await checkRegisteredCard(id, securityCode);
   const passwordEncrypted = encryptPassword(password)
   const cardData: { password: string } = {

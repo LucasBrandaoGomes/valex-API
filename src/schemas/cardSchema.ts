@@ -18,4 +18,10 @@ const cardActivateSchema = joi.object({
     .required(),
 });
 
-export { newCardSchema, cardActivateSchema };
+const blockUnblockCardSchema = joi.object({
+  id: joi.number().integer().greater(0).required(),
+  password: joi.string().length(4).pattern(/^[0-9]{4}$/).required(),
+});
+
+
+export { newCardSchema, cardActivateSchema, blockUnblockCardSchema };
