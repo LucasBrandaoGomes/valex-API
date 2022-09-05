@@ -1,26 +1,15 @@
 import dotenv from "dotenv";
 import Cryptr from "cryptr";
 
+import * as checkCardValidations from "../services/utils/checkCardValidations.js"
 import * as cardRepository from "../repositories/cardRepository.js";
 
 dotenv.config();
 
-export async function checkRegisteredCard(id: number, securityCode: string) {
-    const result = await cardRepository.findById(id);
-    const cryptr = new Cryptr(process.env.CRYPTR || "secret");
-    const decryptedSecurityCode: string = cryptr.decrypt(result.securityCode);
-    
-    if (!result) {
-      throw { code: "NotFound", message: "Invalid card"}
-    }
-
-    if(result.password && result.password !== null){
+function checkIfCardIsActive(card: any){
+  if(card.password && card.password !== null){
       throw { code: "Conflict", message: "Card already active"}
-    }
-
-    if(securityCode !== decryptedSecurityCode){
-        throw { code: "Forbidden", message: "Invalid card"}
-    }
+  }
 }
 
 function encryptPassword(password:string) {
@@ -30,11 +19,17 @@ function encryptPassword(password:string) {
     return passwordEncrypted
 }
 export async function activeCard(id: number, securityCode: string, password:string) {
-  
-  await checkRegisteredCard(id, securityCode);
+  const result = await cardRepository.findById(id);
+
+  checkCardValidations.checkIfCardExist(result)
+  checkCardValidations.checkExpirationDate(result.expirationDate)
+  checkIfCardIsActive(result)
+  checkCardValidations.checkSecurityCode(result, securityCode);
+
   const passwordEncrypted = encryptPassword(password)
   const cardData: { password: string } = {
     password: passwordEncrypted,
-  };  
+  };
+
   await cardRepository.update(id, cardData) 
 }

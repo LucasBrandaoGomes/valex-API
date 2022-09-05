@@ -5,6 +5,7 @@ import * as rechargeRepository from "../repositories/rechargeRepository.js"
 import * as paymentRepository from "../repositories/paymentRepository.js"
 import * as companyRepository from "../repositories/companyRepository.js"
 import * as businessesRepository from "../repositories/businessRepository.js"
+import * as checkCardValidations from "../services/utils/checkCardValidations.js"
 
 async function checkCompanyApiKey(apiKey: string) {
     const company = await companyRepository.findByApiKey(apiKey);
@@ -42,42 +43,40 @@ async function calculateBalance(cardId:number) {
     const rechargeSum = getTransactionsSum(recharges)
     const balance = rechargeSum - paymentsSum
     return balance
-  }
+}
 
 function getTransactionsSum(transactions: any): number {
     return transactions.reduce(
       (sum: number, transaction: any) => sum + transaction.amount,
       0
     );
-  }
+}
 
 async function checkBalance(cardId: number, amount: number) {
     const balance = await calculateBalance(cardId)
     const finalBalance = balance - amount
-    if(finalBalance < amount){
+    if(finalBalance <0){
         throw { code: "Unauthorized", message: "Sorry, this card have insufficient funds"}
     }
     
 }
 
+function checkIfCardIsBlocked(isBlocked: boolean){
+  if(isBlocked === true){
+    throw { code: "Unauthorized", message: "Card blocked, please unblock the card."}
+  }
+}
+
 export async function newPayment(cardId: number, password: string, businessId: number, amount:number, apiKey: string, ) {
     const paymentData = { cardId, businessId, amount };
     const card = await cardRepository.findById(cardId);
-    const rechargeData  = {cardId, amount}
     
     await checkCompanyApiKey(apiKey)
     
-    if (!card) {
-      throw { code: "NotFound", message: "Invalid card"}
-    }
-    
-    if(card.password === null){
-      throw { code: "Conflict", message: "Card inactive, please activate the card before recharge."}
-    }
-
-    if(card.isBlocked === true){
-      throw { code: "Unauthorized", message: "Card blocked, please unblock the card."}
-    }
+    checkCardValidations.checkIfCardExist(card)
+    checkCardValidations.checkExpirationDate(card.expirationDate)
+    checkCardValidations.checkIfCardIsInactive(card.password)
+    checkIfCardIsBlocked(card.isBlocked)
     checkPassword(password, card.password)
     await checkBusiness(businessId, card.type)
     await checkBalance(cardId,amount)

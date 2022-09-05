@@ -1,13 +1,12 @@
 import * as cardRepository from "../repositories/cardRepository.js";
 import * as paymentRepository from "../repositories/paymentRepository.js"
 import * as rechargeRepository from "../repositories/rechargeRepository.js"
+import * as checkCardValidations from "../services/utils/checkCardValidations.js"
 
 export async function cardTransactions(id:number) {
     const result = await cardRepository.findById(id);
     
-    if (!result) {
-      throw { code: "NotFound", message: "Invalid card"}
-    }
+    checkCardValidations.checkIfCardExist(result)
     
     const payments = await paymentRepository.findByCardId(id)
     const recharges = await rechargeRepository.findByCardId(id)
